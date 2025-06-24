@@ -19,7 +19,7 @@ public class StackOverflowController {
 	@Autowired
 	StackOverflowService stackOverflowUtil;
 	
-	//@GetMapping("/miner")
+	@GetMapping("/miner")
 	public ResponseEntity<?> getQuestionsAndAnswers() throws IOException, InterruptedException{
         int pageNumber = 1;
 

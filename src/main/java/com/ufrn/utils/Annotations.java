@@ -1,45 +1,288 @@
 package com.ufrn.utils;
 
 public class Annotations {
-    public static final String HIBERNATE_ANNOTATIONS = "@AccessType" + "|@Any" + "|@AnyMetaDef" + "|@AnyMetaDefs"
-            + "|@AttributeAccessor" + "|@BatchSize" + "|@Cache" + "|@Cascade" + "|@Check" + "|@CollectionId"
-            + "|@CollectionType" + "|@ColumnDefault" + "|@Columns" + "|@ColumnTransformer" + "|@ColumnTransformers"
-            + "|@CreationTimestamp" + "|@DiscriminatorFormula" + "|@DiscriminatorOptions" + "|@DynamicInsert"
-            + "|@DynamicUpdate" + "|@Entity" + "|@Fetch" + "|@FetchProfile" + "|@FetchProfile.FetchOverride"
-            + "|@FetchProfiles" + "|@Filter" + "|@FilterDef" + "|@FilterDefs" + "|@FilterJoinTable"
-            + "|@FilterJoinTables" + "|@Filters" + "|@ForeignKey" + "|@Formula" + "|@Generated" + "|@GeneratorType"
-            + "|@GenericGenerator" + "|@GenericGenerators" + "|@Immutable" + "|@Index" + "|@IndexColumn"
-            + "|@JoinColumnOrFormula" + "|@JoinColumnsOrFormulas" + "|@JoinFormula" + "|@LazyCollection" + "|@LazyGroup"
-            + "|@LazyToOne" + "|@ListIndexBase" + "|@Loader" + "|@ManyToAny" + "|@MapKeyType" + "|@MetaValue"
-            + "|@NamedNativeQueries" + "|@NamedNativeQuery" + "|@NamedQueries" + "|@NamedQuery" + "|@Nationalized"
-            + "|@NaturalId" + "|@NaturalIdCache" + "|@NotFound" + "|@OnDelete" + "|@OptimisticLock"
-            + "|@OptimisticLocking" + "|@OrderBy" + "|@ParamDef" + "|@Parameter" + "|@Parent" + "|@Persister"
-            + "|@Polymorphism" + "|@Proxy" + "|@RowId" + "|@SelectBeforeUpdate" + "|@Sort" + "|@SortComparator"
-            + "|@SortNatural" + "|@Source" + "|@SQLDelete" + "|@SQLDeleteAll" + "|@SqlFragmentAlias" + "|@SQLInsert"
-            + "|@SQLUpdate" + "|@Subselect" + "|@Synchronize" + "|@Table" + "|@Tables" + "|@Target" + "|@Tuplizer"
-            + "|@Tuplizers" + "|@Type" + "|@TypeDef" + "|@TypeDefs" + "|@UpdateTimestamp" + "|@ValueGenerationType"
-            + "|@Where" + "|@WhereJoinTable";
 
-    public static final String JPA_ANNOTATIONS = "@Access" + "|@AssociationOverride" + "|@AssociationOverrides"
-            + "|@AttributeOverride" + "|@AttributeOverrides" + "|@Basic" + "|@Cacheable" + "|@CollectionTable"
-            + "|@Column" + "|@ColumnResult" + "|@ConstructorResult" + "|@Convert" + "|@Converter" + "|@Converts"
-            + "|@DiscriminatorColumn" + "|@DiscriminatorValue" + "|@ElementCollection" + "|@Embeddable" + "|@Embedded"
-            + "|@EmbeddedId" + "|@Entity" + "|@EntityListeners" + "|@EntityResult" + "|@Enumerated"
-            + "|@ExcludeDefaultListeners" + "|@ExcludeSuperclassListeners" + "|@FieldResult" + "|@ForeignKey"
-            + "|@GeneratedValue" + "|@Id" + "|@IdClass" + "|@Index" + "|@Inheritance" + "|@JoinColumn" + "|@JoinColumns"
-            + "|@JoinTable" + "|@Lob" + "|@ManyToMany" + "|@ManyToOne" + "|@MapKey" + "|@MapKeyClass" + "|@MapKeyColumn"
-            + "|@MapKeyEnumerated" + "|@MapKeyJoinColumn" + "|@MapKeyJoinColumns" + "|@MapKeyTemporal"
-            + "|@MappedSuperclass" + "|@MapsId" + "|@NamedAttributeNode" + "|@NamedEntityGraph" + "|@NamedEntityGraphs"
-            + "|@NamedNativeQueries" + "|@NamedNativeQuery" + "|@NamedQueries" + "|@NamedQuery"
-            + "|@NamedStoredProcedureQueries" + "|@NamedStoredProcedureQuery" + "|@NamedSubgraph" + "|@OneToMany"
-            + "|@OneToOne" + "|@OrderBy" + "|@OrderColumn" + "|@PersistenceContext" + "|@PersistenceContexts"
-            + "|@PersistenceProperty" + "|@PersistenceUnit" + "|@PersistenceUnits" + "|@PostLoad" + "|@PostPersist"
-            + "|@PostRemove" + "|@PostUpdate" + "|@PrePersist" + "|@PreRemove" + "|@PreUpdate"
-            + "|@PrimaryKeyJoinColumn" + "|@PrimaryKeyJoinColumns" + "|@QueryHint" + "|@SecondaryTable"
-            + "|@SecondaryTables" + "|@SequenceGenerator" + "|@SequenceGenerators" + "|@SqlResultSetMapping"
-            + "|@SqlResultSetMappings" + "|@StoredProcedureParameter" + "|@Table" + "|@TableGenerator"
-            + "|@TableGenerators" + "|@Temporal" + "|@Transient" + "|@UniqueConstraint" + "|@Version";
+  // Hiberate 7.0 - https://docs.jboss.org/hibernate/orm/7.0/javadocs/org/hibernate/annotations/package-summary.html
+  public static final String HIBERNATE_ANNOTATIONS =
+    "@Any" +
+    "|@AnyDiscriminator" +
+    "|@AnyDiscriminatorImplicitValues" +
+    "|@AnyDiscriminatorValue" +
+    "|@AnyDiscriminatorValues" +
+    "|@AnyKeyJavaClass" +
+    "|@AnyKeyJavaType" +
+    "|@AnyKeyJdbcType" +
+    "|@AnyKeyJdbcTypeCode" +
+    "|@Array" +
+    "|@AttributeAccessor" +
+    "|@AttributeBinderType" +
+    "|@Bag" +
+    "|@BatchSize" +
+    "|@Cache" +
+    "|@Cascade" +
+    "|@Check" +
+    "|@Checks" +
+    "|@Collate" +
+    "|@CollectionId" +
+    "|@CollectionIdJavaClass" +
+    "|@CollectionIdJavaType" +
+    "|@CollectionIdJdbcType" +
+    "|@CollectionIdJdbcTypeCode" +
+    "|@CollectionIdMutability" +
+    "|@CollectionIdType" +
+    "|@CollectionType" +
+    "|@CollectionTypeRegistration" +
+    "|@CollectionTypeRegistrations" +
+    "|@ColumnDefault" +
+    "|@Columns" +
+    "|@ColumnTransformer" +
+    "|@ColumnTransformers" +
+    "|@Comment" +
+    "|@Comments" +
+    "|@CompositeType" +
+    "|@CompositeTypeRegistration" +
+    "|@CompositeTypeRegistrations" +
+    "|@ConcreteProxy" +
+    "|@ConverterRegistration" +
+    "|@ConverterRegistrations" +
+    "|@CreationTimestamp" +
+    "|@CurrentTimestamp" +
+    "|@DialectOverride.Check" +
+    "|@DialectOverride.Checks" +
+    "|@DialectOverride.ColumnDefault" +
+    "|@DialectOverride.ColumnDefaults" +
+    "|@DialectOverride.DiscriminatorFormula" +
+    "|@DialectOverride.DiscriminatorFormulas" +
+    "|@DialectOverride.FilterDefOverrides" +
+    "|@DialectOverride.FilterDefs" +
+    "|@DialectOverride.FilterOverrides" +
+    "|@DialectOverride.Filters" +
+    "|@DialectOverride.Formula" +
+    "|@DialectOverride.Formulas" +
+    "|@DialectOverride.GeneratedColumn" +
+    "|@DialectOverride.GeneratedColumns" +
+    "|@DialectOverride.JoinFormula" +
+    "|@DialectOverride.JoinFormulas" +
+    "|@DialectOverride.OverridesAnnotation" +
+    "|@DialectOverride.SQLDelete" +
+    "|@DialectOverride.SQLDeleteAll" +
+    "|@DialectOverride.SQLDeleteAlls" +
+    "|@DialectOverride.SQLDeletes" +
+    "|@DialectOverride.SQLInsert" +
+    "|@DialectOverride.SQLInserts" +
+    "|@DialectOverride.SQLOrder" +
+    "|@DialectOverride.SQLOrders" +
+    "|@DialectOverride.SQLRestriction" +
+    "|@DialectOverride.SQLRestrictions" +
+    "|@DialectOverride.SQLSelect" +
+    "|@DialectOverride.SQLSelects" +
+    "|@DialectOverride.SQLUpdate" +
+    "|@DialectOverride.SQLUpdates" +
+    "|@DialectOverride.Version" +
+    "|@DiscriminatorFormula" +
+    "|@DiscriminatorOptions" +
+    "|@DynamicInsert" +
+    "|@DynamicUpdate" +
+    "|@EmbeddableInstantiator" +
+    "|@EmbeddableInstantiatorRegistration" +
+    "|@EmbeddableInstantiatorRegistrations" +
+    "|@EmbeddedColumnNaming" +
+    "|@Fetch" +
+    "|@FetchProfile" +
+    "|@FetchProfile.FetchOverride" +
+    "|@FetchProfileOverride" +
+    "|@FetchProfileOverrides" +
+    "|@FetchProfiles" +
+    "|@Filter" +
+    "|@FilterDef" +
+    "|@FilterDefs" +
+    "|@FilterJoinTable" +
+    "|@FilterJoinTables" +
+    "|@Filters" +
+    "|@Formula" +
+    "|@FractionalSeconds" +
+    "|@Generated" +
+    "|@GeneratedColumn" +
+    "|@GenericGenerator" +
+    "|@GenericGenerators" +
+    "|@HQLSelect" +
+    "|@IdGeneratorType" +
+    "|@Immutable" +
+    "|@Imported" +
+    "|@Instantiator" +
+    "|@JavaType" +
+    "|@JavaTypeRegistration" +
+    "|@JavaTypeRegistrations" +
+    "|@JdbcType" +
+    "|@JdbcTypeCode" +
+    "|@JdbcTypeRegistration" +
+    "|@JdbcTypeRegistrations" +
+    "|@JoinColumnOrFormula" +
+    "|@JoinColumnsOrFormulas" +
+    "|@JoinFormula" +
+    "|@LazyGroup" +
+    "|@ListIndexBase" +
+    "|@ListIndexJavaType" +
+    "|@ListIndexJdbcType" +
+    "|@ListIndexJdbcTypeCode" +
+    "|@ManyToAny" +
+    "|@MapKeyCompositeType" +
+    "|@MapKeyJavaType" +
+    "|@MapKeyJdbcType" +
+    "|@MapKeyJdbcTypeCode" +
+    "|@MapKeyMutability" +
+    "|@MapKeyType" +
+    "|@Mutability" +
+    "|@NamedEntityGraph" +
+    "|@NamedEntityGraphs" +
+    "|@NamedNativeQueries" +
+    "|@NamedNativeQuery" +
+    "|@NamedQueries" +
+    "|@NamedQuery" +
+    "|@Nationalized" +
+    "|@NativeGenerator" +
+    "|@NaturalId" +
+    "|@NaturalIdCache" +
+    "|@NotFound" +
+    "|@OnDelete" +
+    "|@OptimisticLock" +
+    "|@OptimisticLocking" +
+    "|@ParamDef" +
+    "|@Parameter" +
+    "|@Parent" +
+    "|@PartitionKey" +
+    "|@PropertyRef" +
+    "|@QueryCacheLayout" +
+    "|@RowId" +
+    "|@SecondaryRow" +
+    "|@SecondaryRows" +
+    "|@SoftDelete" +
+    "|@SortComparator" +
+    "|@SortNatural" +
+    "|@Source" +
+    "|@SQLDelete" +
+    "|@SQLDeleteAll" +
+    "|@SQLDeletes" +
+    "|@SqlFragmentAlias" +
+    "|@SQLInsert" +
+    "|@SQLInserts" +
+    "|@SQLJoinTableRestriction" +
+    "|@SQLOrder" +
+    "|@SQLRestriction" +
+    "|@SQLSelect" +
+    "|@SQLUpdate" +
+    "|@SQLUpdates" +
+    "|@Struct" +
+    "|@Subselect" +
+    "|@Synchronize" +
+    "|@TargetEmbeddable" +
+    "|@TenantId" +
+    "|@TimeZoneColumn" +
+    "|@TimeZoneStorage" +
+    "|@Type" +
+    "|@TypeBinderType" +
+    "|@TypeRegistration" +
+    "|@TypeRegistrations" +
+    "|@UpdateTimestamp" +
+    "|@UuidGenerator" +
+    "|@ValueGenerationType" +
+    "|@View";
 
-    private Annotations() {
-    }
+  // Jakarta 3.2 - https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/package-summary
+  public static final String JPA_ANNOTATIONS =
+    "Access" +
+    "|AssociationOverride" +
+    "|AssociationOverrides" +
+    "|AttributeOverride" +
+    "|AttributeOverrides" +
+    "|Basic" +
+    "|Cacheable" +
+    "|CheckConstraint" +
+    "|CollectionTable" +
+    "|Column" +
+    "|ColumnResult" +
+    "|ConstructorResult" +
+    "|Convert" +
+    "|Converter" +
+    "|Converts" +
+    "|DiscriminatorColumn" +
+    "|DiscriminatorValue" +
+    "|ElementCollection" +
+    "|Embeddable" +
+    "|Embedded" +
+    "|EmbeddedId" +
+    "|Entity" +
+    "|EntityListeners" +
+    "|EntityResult" +
+    "|Enumerated" +
+    "|EnumeratedValue" +
+    "|ExcludeDefaultListeners" +
+    "|ExcludeSuperclassListeners" +
+    "|FieldResult" +
+    "|ForeignKey" +
+    "|GeneratedValue" +
+    "|Id" +
+    "|IdClass" +
+    "|Index" +
+    "|Inheritance" +
+    "|JoinColumn" +
+    "|JoinColumns" +
+    "|JoinTable" +
+    "|Lob" +
+    "|ManyToMany" +
+    "|ManyToOne" +
+    "|MapKey" +
+    "|MapKeyClass" +
+    "|MapKeyColumn" +
+    "|MapKeyEnumerated" +
+    "|MapKeyJoinColumn" +
+    "|MapKeyJoinColumns" +
+    "|MapKeyTemporal" +
+    "|MappedSuperclass" +
+    "|MapsId" +
+    "|NamedAttributeNode" +
+    "|NamedEntityGraph" +
+    "|NamedEntityGraphs" +
+    "|NamedNativeQueries" +
+    "|NamedNativeQuery" +
+    "|NamedQueries" +
+    "|NamedQuery" +
+    "|NamedStoredProcedureQueries" +
+    "|NamedStoredProcedureQuery" +
+    "|NamedSubgraph" +
+    "|OneToMany" +
+    "|OneToOne" +
+    "|OrderBy" +
+    "|OrderColumn" +
+    "|PersistenceContext" +
+    "|PersistenceContexts" +
+    "|PersistenceProperty" +
+    "|PersistenceUnit" +
+    "|PersistenceUnits" +
+    "|PostLoad" +
+    "|PostPersist" +
+    "|PostRemove" +
+    "|PostUpdate" +
+    "|PrePersist" +
+    "|PreRemove" +
+    "|PreUpdate" +
+    "|PrimaryKeyJoinColumn" +
+    "|PrimaryKeyJoinColumns" +
+    "|QueryHint" +
+    "|SecondaryTable" +
+    "|SecondaryTables" +
+    "|SequenceGenerator" +
+    "|SequenceGenerators" +
+    "|SqlResultSetMapping" +
+    "|SqlResultSetMappings" +
+    "|StoredProcedureParameter" +
+    "|Table" +
+    "|TableGenerator" +
+    "|TableGenerators" +
+    "|Temporal" +
+    "|Transient" +
+    "|UniqueConstraint" +
+    "|Version";
+
+  private Annotations() {}
 }

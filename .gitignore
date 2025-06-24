@@ -15,7 +15,6 @@
 *.war
 *.nar
 *.ear
-*.zip
 *.tar.gz
 *.rar
 
@@ -33,3 +32,5 @@ hibersafe.iml
 .idea/
 .settings/
 /.metadata/
+.vscode/
+*.icloud

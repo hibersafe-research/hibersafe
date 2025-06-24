@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @PropertySource(value = "classpath:application-${env}.properties", encoding = "utf8mb4")
 public class WebConfig extends WebMvcConfigurerAdapter {
 	
+	@SuppressWarnings("null")
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")

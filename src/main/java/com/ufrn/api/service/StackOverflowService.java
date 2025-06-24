@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,22 +46,24 @@ public class StackOverflowService {
     QuestionExceptionRepository questionExceptionRepository;
 
     public PageDTO sendHttpRequest(int page) throws IOException, InterruptedException {
+        // 2010-03-31
+        String fromDate = "fromdate=1269993600&";
+        // 2025-05-31
+        String toDate = "todate=1748649600&";
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder().GET()
-                .uri(URI.create("https://api.stackexchange.com/2.3/questions?key=vtviiqbbd4qmJYPlsfYCKg((&" + "fromdate=1420070400&"
-                        + "todate=1662595200&" + "page=" + page + "&" + "pagesize=100&" + "order=asc&"
+                .uri(URI.create("https://api.stackexchange.com/2.3/questions?key=vtviiqbbd4qmJYPlsfYCKg((&" + fromDate
+                        + toDate + "page=" + page + "&" + "pagesize=100&" + "order=asc&"
                         + "sort=creation&" + "tagged=hibernate&" + "site=stackoverflow"
                         + "&filter=!BLgprJqGKEK0a17JpVQydcQ22st_Xe"
-//                        + "&filter=!b*Ar.5VD4mpdg2L*VkuIiXMYmkK*r5"
+                    //  + "&filter=!b*Ar.5VD4mpdg2L*VkuIiXMYmkK*r5"
                         ))
                 .build();
 
         HttpResponse<byte[]> response = client.send(request, BodyHandlers.ofByteArray());
 
-        GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(response.body()));
-
-        String jsonString = new String(gzipInputStream.readAllBytes(), StandardCharsets.UTF_8);
+        String jsonString = new String(new ByteArrayInputStream(response.body()).readAllBytes(), StandardCharsets.UTF_8);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
@@ -84,8 +85,8 @@ public class StackOverflowService {
             Matcher matcher1 = patternAnnotation.matcher(item.getBody());
             Matcher matcher2 = patternException.matcher(item.getBody());
             
-            List<String> annotations = new ArrayList<String>();
-            List<String> exceptions = new ArrayList<String>();
+            List<String> annotations = new ArrayList<>();
+            List<String> exceptions = new ArrayList<>();
 
             // If there's an annotation and an exception on the question
             if (matcher1.find() && matcher2.find()) {
