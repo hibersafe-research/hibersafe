@@ -13,7 +13,7 @@ public class AnswerDTO {
     private Long answerId;
 
     @JsonProperty("is_accepted")
-    private boolean isAccepted;
+    private Boolean isAccepted;
 
     @JsonProperty("score")
     private int score;
@@ -52,11 +52,11 @@ public class AnswerDTO {
         this.answerId = answerId;
     }
 
-    public boolean isAccepted() {
+    public Boolean isAccepted() {
         return isAccepted;
     }
 
-    public void setAccepted(boolean isAccepted) {
+    public void setAccepted(Boolean isAccepted) {
         this.isAccepted = isAccepted;
     }
 

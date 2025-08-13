@@ -17,7 +17,7 @@ public class Answer {
     private Long id;
 
     @Column(name="isAccepted")
-    private boolean isAccepted;
+    private Boolean isAccepted = Boolean.FALSE;
 
     @Column
     private int score;
@@ -56,11 +56,11 @@ public class Answer {
         this.id = id;
     }
 
-    public boolean isAccepted() {
+    public Boolean isAccepted() {
         return isAccepted;
     }
 
-    public void setAccepted(boolean isAccepted) {
+    public void setAccepted(Boolean isAccepted) {
         this.isAccepted = isAccepted;
     }
 
