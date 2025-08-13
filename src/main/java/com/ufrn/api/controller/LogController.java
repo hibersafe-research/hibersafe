@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ufrn.api.service.LogWebService;
 import com.ufrn.dtos.LogWebDTO;
 
-import io.swagger.annotations.ApiOperation;
-
 @RestController
 @RequestMapping("/api/log")
 public class LogController {
@@ -23,7 +21,6 @@ public class LogController {
 	
 	@PostMapping("/")
 	@CrossOrigin
-	@ApiOperation(value = "Insert logs from Hibersafe web")
 	public ResponseEntity<Boolean> insertLogsWeb(@RequestBody(required=true) LogWebDTO logWeb) {
 		
 		logWebService.insertLogsWeb(logWeb);
