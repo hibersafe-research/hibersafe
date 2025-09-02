@@ -3,6 +3,7 @@ package com.ufrn.api.repository;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ufrn.dtos.QuestionLinkDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -47,5 +48,12 @@ public interface QuestionRepository extends JpaRepository<Question, Integer>{
 			+ "(a.isAccepted = 1 OR a.score > 0)  "
 			+ "ORDER BY qa.annotation", nativeQuery = true)
 	public LinkedList<Object[]> findQuestionByExceptionAlternative(@Param("exception") String exception);
+
+	@Query(value = "SELECT q.id, 1 - (q.embedding <=> :mesageEmbedding::vector) as similarity "
+			+ "FROM question q "
+			+ "WHERE similarity > :match_threshold "
+			+ "ORDER BY similarity ASC "
+			+ "LIMIT :match_cnt ", nativeQuery = true)
+	public List<QuestionLinkDTO> findQuestionBySimilarity(@Param("mesageEmbedding") List<Double> mesageEmbedding, @Param("match_threshold") float match_threshold, @Param("match_cnt") int match_cnt);
 
 }

@@ -9,6 +9,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.Array;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "question")
@@ -16,6 +19,11 @@ public class Question {
     
 	@Id
     private Long id;
+
+    @Column(name = "embedding", columnDefinition = "vector(1536)")
+    @JdbcTypeCode(SqlTypes.VECTOR)
+    @Array(length = 1536)
+    private List<Double> embedding;
 
     @Column
     private String tags;
@@ -104,6 +112,13 @@ public class Question {
 		return "Question [id=" + id + ", tags=" + tags + ", body=" + body + ", creationDate=" + creationDate
 				+ ", lastActivityDate=" + lastActivityDate + ", answers=" + answers + "]";
 	}
+
+    public String toRagContext(){
+        return String.format(
+                "body:\n %s",
+                body
+        );
+    }
 
 	
 }

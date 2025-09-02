@@ -12,7 +12,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.ufrn.dtos.*;
 import org.apache.commons.text.similarity.LongestCommonSubsequence;
+import org.springframework.ai.embedding.EmbeddingClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,22 +23,22 @@ import com.ufrn.api.entities.Log;
 import com.ufrn.api.entities.Question;
 import com.ufrn.api.repository.LogRepository;
 import com.ufrn.api.repository.QuestionRepository;
-import com.ufrn.dtos.AllResults;
-import com.ufrn.dtos.ExceptionsEnum;
-import com.ufrn.dtos.QuestionDTO;
-import com.ufrn.dtos.QuestionResponseDTO;
-import com.ufrn.dtos.ResponseDTO;
-import com.ufrn.dtos.TopSimilarity;
 
 @Service
 @Transactional
 public class QuestionService {
+
+	private static final float MATCH_THRESHOLD = 0.7f;
+	private static final int MATCH_CNT = 3;
 
 	@Autowired
 	QuestionRepository questionRepository;
 
 	@Autowired
 	LogRepository logRepository;
+
+	@Autowired
+	EmbeddingClient embeddingClient;
 
 	public List<QuestionDTO> getQuestions() {
 		List<Question> questions = questionRepository.findAll();
@@ -113,5 +115,16 @@ public class QuestionService {
 				.collect(Collectors.toList());
 
 		return new ResponseDTO(topSimilarity, allResults);
+	}
+
+	private List<Double> getTextEmbedding(String text)  {
+		return embeddingClient.embed(text);
+	}
+//	Quando for popular o banco, lembrar de colocar a saída dessa função como campo embedding,
+//	como parâmetro dessa função passar o body
+
+	public List<QuestionLinkDTO> getQuestionsBySemanticSearch(String mesage) {
+		List<Double> mesageEmbedding = getTextEmbedding(mesage);
+		return questionRepository.findQuestionBySimilarity(mesageEmbedding, MATCH_THRESHOLD, MATCH_CNT);
 	}
 }
