@@ -52,6 +52,6 @@ public class PromptService {
 
         Prompt chatPrompt = template.create(variables);
 
-        return aiClient.call(chatPrompt).getResult().getOutput().toString();
+        return aiClient.call(chatPrompt).getResult().getOutput().getContent();
     }
 }

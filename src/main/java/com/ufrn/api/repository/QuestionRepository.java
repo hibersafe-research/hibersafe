@@ -49,11 +49,17 @@ public interface QuestionRepository extends JpaRepository<Question, Integer>{
 			+ "ORDER BY qa.annotation", nativeQuery = true)
 	public LinkedList<Object[]> findQuestionByExceptionAlternative(@Param("exception") String exception);
 
-	@Query(value = "SELECT q.id, 1 - (q.embedding <=> :mesageEmbedding::vector) as similarity "
-			+ "FROM question q "
-			+ "WHERE similarity > :match_threshold "
-			+ "ORDER BY similarity ASC "
-			+ "LIMIT :match_cnt ", nativeQuery = true)
-	public List<QuestionLinkDTO> findQuestionBySimilarity(@Param("mesageEmbedding") List<Double> mesageEmbedding, @Param("match_threshold") float match_threshold, @Param("match_cnt") int match_cnt);
+	@Query(value = """
+    SELECT q.id AS question_id, 1 - (q.embedding <=> (:messageEmbedding)::vector) AS similarity
+    FROM question q
+    WHERE (1 - (q.embedding <=> (:messageEmbedding)::vector)) > :match_threshold
+    ORDER BY similarity DESC
+    LIMIT :match_cnt
+""", nativeQuery = true)
+	List<QuestionLinkDTO> findQuestionBySimilarity(
+			@Param("messageEmbedding") String messageEmbedding,
+			@Param("match_threshold") float matchThreshold,
+			@Param("match_cnt") int matchCnt
+	);
 
 }

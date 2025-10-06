@@ -1,15 +1,6 @@
 package com.ufrn.api.service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.ufrn.dtos.*;
@@ -123,8 +114,17 @@ public class QuestionService {
 //	Quando for popular o banco, lembrar de colocar a saída dessa função como campo embedding,
 //	como parâmetro dessa função passar o body
 
+	private String formatEmbeddingForQuerry(List<Double> embedding) {
+		return  "[" +
+				embedding.stream()
+						.map(d -> String.format(Locale.US, "%.6f", d))
+						.collect(Collectors.joining(",")) +
+				"]";
+	}
+
 	public List<QuestionLinkDTO> getQuestionsBySemanticSearch(String mesage) {
-		List<Double> mesageEmbedding = getTextEmbedding(mesage);
-		return questionRepository.findQuestionBySimilarity(mesageEmbedding, MATCH_THRESHOLD, MATCH_CNT);
+		List<Double> messageEmbedding = getTextEmbedding(mesage);
+		String formatedMessageEmbedding = formatEmbeddingForQuerry(messageEmbedding);
+		return questionRepository.findQuestionBySimilarity(formatedMessageEmbedding, MATCH_THRESHOLD, MATCH_CNT);
 	}
 }

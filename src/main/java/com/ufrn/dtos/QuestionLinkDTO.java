@@ -10,6 +10,11 @@ public class QuestionLinkDTO {
     @JsonProperty("similarity")
     private Double similarity;
 
+    public QuestionLinkDTO(Long questionId, Double similarity) {
+        this.questionId = questionId;
+        this.similarity = similarity;
+    }
+
     public String toRagContext(){
         return "";
     }
