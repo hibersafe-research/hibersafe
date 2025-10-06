@@ -15,6 +15,10 @@ public class QuestionLinkDTO {
         this.similarity = similarity;
     }
 
+    public String toString(){
+        return questionId + "\t" + similarity + "\n";
+    }
+
     public String toRagContext(){
         return "";
     }
