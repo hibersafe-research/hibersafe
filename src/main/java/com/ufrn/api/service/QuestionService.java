@@ -108,8 +108,18 @@ public class QuestionService {
 		return new ResponseDTO(topSimilarity, allResults);
 	}
 
-	private List<Double> getTextEmbedding(String text)  {
-		return embeddingClient.embed(text);
+    /*	Quando for popular o banco, lembrar de colocar a saída dessa função como campo embedding,
+    como parâmetro dessa função passar o body */
+	public List<Double> getTextEmbedding(String text)  {
+        final int MAX_TEXT_LENGTH = 15000;
+
+        System.out.println("embedding for... " + text.length());
+
+        if (text.length() > MAX_TEXT_LENGTH) {
+            text = text.substring(0, MAX_TEXT_LENGTH);
+        }
+
+        return embeddingClient.embed(text);
 	}
 //	Quando for popular o banco, lembrar de colocar a saída dessa função como campo embedding,
 //	como parâmetro dessa função passar o body
@@ -122,8 +132,8 @@ public class QuestionService {
 				"]";
 	}
 
-	public List<QuestionLinkDTO> getQuestionsBySemanticSearch(String mesage) {
-		List<Double> messageEmbedding = getTextEmbedding(mesage);
+	public List<QuestionLinkDTO> getQuestionsBySemanticSearch(String message) {
+		List<Double> messageEmbedding = getTextEmbedding(message);
 		String formatedMessageEmbedding = formatEmbeddingForQuerry(messageEmbedding);
 		return questionRepository.findQuestionBySimilarity(formatedMessageEmbedding, MATCH_THRESHOLD, MATCH_CNT);
 	}

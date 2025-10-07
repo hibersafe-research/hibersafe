@@ -3,6 +3,7 @@ package com.ufrn.api.entities;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.ufrn.utils.VectorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,6 +12,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.Array;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
 import org.hibernate.type.SqlTypes;
 
 @Entity
@@ -23,6 +25,7 @@ public class Question {
     @Column(name = "embedding", columnDefinition = "vector(1536)")
     @JdbcTypeCode(SqlTypes.VECTOR)
     @Array(length = 1536)
+    @Type(VectorType.class)
     private List<Double> embedding;
 
     @Column
@@ -106,6 +109,14 @@ public class Question {
 	public void setAnswers(List<Answer> answers) {
 		this.answers = answers;
 	}
+
+    public List<Double> getEmbedding() {
+        return embedding;
+    }
+
+    public void setEmbedding(List<Double> embedding) {
+        this.embedding = embedding;
+    }
 
 	@Override
 	public String toString() {

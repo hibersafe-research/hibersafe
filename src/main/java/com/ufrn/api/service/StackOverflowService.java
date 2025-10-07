@@ -45,6 +45,9 @@ public class StackOverflowService {
     @Autowired
     QuestionExceptionRepository questionExceptionRepository;
 
+    @Autowired
+    QuestionService questionService;
+
     public PageDTO sendHttpRequest(int page) throws IOException, InterruptedException {
         // 2010-03-31
         String fromDate = "fromdate=1269993600&";
@@ -95,6 +98,7 @@ public class StackOverflowService {
             	
             	// Convert questionDTO to Question entity
                 Question question = item.toQuestion();
+                question.setEmbedding(questionService.getTextEmbedding(question.getBody()));
 
                 // Save Question entity
                 questionRepository.save(question);
