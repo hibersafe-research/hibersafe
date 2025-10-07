@@ -16,7 +16,7 @@ public class QuestionLinkDTO {
     }
 
     public String toString(){
-        return questionId + "\t" + similarity + "\n";
+        return "https://stackoverflow.com/questions/" + questionId + "\nsimilarity: " + similarity + "\n";
     }
 
     public String toRagContext(){

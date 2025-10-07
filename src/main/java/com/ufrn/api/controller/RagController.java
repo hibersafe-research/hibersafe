@@ -34,6 +34,7 @@ public class RagController {
         StringBuilder responseBuffer = new StringBuilder();
         for (QuestionLinkDTO question : questions) {
             responseBuffer.append(question.toString());
+            responseBuffer.append("\n");
         }
         String response = responseBuffer.toString();
         return new ResponseEntity<>(response, HttpStatus.OK);
