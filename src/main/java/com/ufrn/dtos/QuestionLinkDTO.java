@@ -20,6 +20,6 @@ public class QuestionLinkDTO {
     }
 
     public String toRagContext(){
-        return "";
+        return "https://stackoverflow.com/questions/" + questionId;
     }
 }

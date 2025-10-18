@@ -20,7 +20,7 @@ import com.ufrn.api.repository.QuestionRepository;
 public class QuestionService {
 
 	private static final float MATCH_THRESHOLD = 0.7f;
-	private static final int MATCH_CNT = 3;
+	private static final int MATCH_CNT = 10;
 
 	@Autowired
 	QuestionRepository questionRepository;
@@ -132,9 +132,22 @@ public class QuestionService {
 				"]";
 	}
 
-	public List<QuestionLinkDTO> getQuestionsBySemanticSearch(String message) {
+	public List<QuestionLinkDTO> getQuestionsBySemanticSearch(String message, Optional<Integer> op_match_count, Optional<Float> op_match_threshold) {
+		int match_count = MATCH_CNT;
+		float match_threshold = MATCH_THRESHOLD;
+		if(op_match_count.isPresent()) {
+			match_count = op_match_count.get();
+		}
+		if(op_match_threshold.isPresent()) {
+			match_threshold = op_match_threshold.get();
+		}
 		List<Double> messageEmbedding = getTextEmbedding(message);
 		String formatedMessageEmbedding = formatEmbeddingForQuerry(messageEmbedding);
-		return questionRepository.findQuestionBySimilarity(formatedMessageEmbedding, MATCH_THRESHOLD, MATCH_CNT);
+		return questionRepository.findQuestionBySimilarity(formatedMessageEmbedding, match_threshold, match_count);
+	}
+
+	public String clean_stack_trace(String stack_trace){
+//		todo
+		return stack_trace;
 	}
 }
