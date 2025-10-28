@@ -83,3 +83,13 @@ a {
   padding: 0.5em;
   text-decoration: none;
 }
+
+.resultList p,
+.resultList li {
+  text-align: justify;
+  line-height: 1.6;
+}
+
+.resultList strong {
+  font-weight: bold;
+}

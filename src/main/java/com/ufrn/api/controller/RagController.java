@@ -21,7 +21,7 @@ public class RagController {
     @Autowired
     private QuestionService questionService;
 
-    @GetMapping("")
+    @PostMapping("")
     @CrossOrigin
     public ResponseEntity<String> getRag(
             @RequestBody(required=true) String message,

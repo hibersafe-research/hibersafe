@@ -3,6 +3,7 @@ import Results from "../components/Results";
 import styles from "./Home.module.scss";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
+import ReactMarkdown from 'react-markdown';
 
 interface GoogleAPI {
   data: {
@@ -16,10 +17,19 @@ interface HibersafeAPI {
   };
 }
 
+interface RagAPI {
+  data: string
+}
+
 export default function Home() {
   const [searchParams] = useSearchParams();
-  var estrategia = searchParams.get("estrategia");
-  var id = searchParams.get("id");
+  let estrategia = searchParams.get("estrategia");
+  let id = searchParams.get("id");
+  let rag = searchParams.get("rag");
+  let gpt = searchParams.get("gpt");
+  let linkCount = searchParams.get("link_count") ?? 15
+  let minSimilarity = searchParams.get("min_similarity") ?? 0.75
+
   const exceptions = [
     "AnnotationException",
     "AssertionFailure",
@@ -76,6 +86,7 @@ export default function Home() {
   const [exception, setException] = useState<string>(exceptions[0]);
   const [resultsA, setResultsA] = useState<string[]>([]);
   const [resultsB, setResultsB] = useState<string[]>([]);
+  const [resultsRAG, setResultsRAG] = useState<string>('');
   const [stacktrace, setStacktrace] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [toLog, setToLog] = useState<boolean>(false);
@@ -136,9 +147,35 @@ export default function Home() {
     }
   };
 
+  const calculateRAGResult = async (useRAG: boolean) => {
+    setResultsRAG('');
+    if (!stacktrace) {
+      alert("Informe uma stacktrace para continuar!");
+    } else {
+      setLoading(true);
+      try {
+        let returnRAG = await axios.post<any, RagAPI>(
+          `http://localhost:8000/api/rag?link_count=${linkCount}&min_similarity=${minSimilarity}&rag=${useRAG}`,
+          { stacktrace }
+        );
+        setResultsRAG(returnRAG?.data);
+        setLoading(false);
+      } catch (e) {
+        alert("Ocorreu algum erro. Por favor, tente novamente.");
+        setResultsB([]);
+        setLoading(false);
+        console.log(e);
+      }
+    }
+  }
+
+  const calculateRAG = async () => {await calculateRAGResult(true)}
+
+  const calculateGPT  = async () => {await calculateRAGResult(false)}
+
   useEffect(() => {
     if (toLog && estrategia === "A") {
-      axios.post<any, any>(`http://localhost:8080/api/log/`, {
+      axios.post<any, any>(`http://localhost:8000/api/log/`, {
         estrategia,
         id,
         dados: resultsA,
@@ -151,7 +188,7 @@ export default function Home() {
 
   useEffect(() => {
     if (toLog && estrategia === "B") {
-      axios.post<any, any>(`http://localhost:8080/api/log/`, {
+      axios.post<any, any>(`http://localhost:8000/api/log/`, {
         estrategia,
         id,
         dados: resultsB,
@@ -162,42 +199,65 @@ export default function Home() {
     setToLog(false);
   }, [estrategia, exception, id, resultsB, stacktrace, toLog]);
 
+  const renderOldStrategies = () => {
+    return estrategia && id && (
+      <div className={styles.inputGroup}>
+        <label>Selecione a exceção lançada e informe a stacktrace:</label>
+        <select
+          onChange={(e) => setException(e.target.value)}
+          disabled={loading}
+        >
+          {exceptions.map((exception) => (
+            <option>{exception}</option>
+          ))}
+        </select>
+        <textarea
+          id="stacktrace"
+          onChange={(e) => setStacktrace(e.target.value)}
+          maxLength={1200}
+          disabled={loading}
+        />
+        <button
+          onClick={
+            estrategia === "A"
+              ? calculateResultsA
+              : estrategia === "B"
+                ? calculateResultsB
+                : undefined
+          }
+          disabled={!stacktrace || loading}
+        >
+          Buscar
+        </button>
+      </div>
+    )
+  }
+
+  const renderRAG = () => {
+    return (rag || gpt) && (
+      <div className={styles.inputGroup}>
+        <label>Informe a stacktrace:</label>
+        <textarea
+          id="stacktrace"
+          onChange={(e) => setStacktrace(e.target.value)}
+          maxLength={1200}
+          disabled={loading}
+        />
+        <button
+          onClick={rag ? calculateRAG : calculateGPT}
+          disabled={loading}
+        >
+          Buscar
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.pageRoot}>
       <h1>Hibersafe</h1>
-      {estrategia && id ? (
-        <div className={styles.inputGroup}>
-          <label>Selecione a exceção lançada e informe a stacktrace:</label>
-          <select
-            onChange={(e) => setException(e.target.value)}
-            disabled={loading}
-          >
-            {exceptions.map((exception) => (
-              <option>{exception}</option>
-            ))}
-          </select>
-          <textarea
-            id="stacktrace"
-            onChange={(e) => setStacktrace(e.target.value)}
-            maxLength={1200}
-            disabled={loading}
-          />
-          <button
-            onClick={
-              estrategia === "A"
-                ? calculateResultsA
-                : estrategia === "B"
-                ? calculateResultsB
-                : undefined
-            }
-            disabled={!stacktrace || loading}
-          >
-            Buscar
-          </button>
-        </div>
-      ) : (
-        "URL Inválida!"
-      )}
+      {renderOldStrategies()}
+      {renderRAG()}
       {loading && (
         <img
           alt="Carregando..."
@@ -230,6 +290,22 @@ export default function Home() {
                   resultsB.map((r, index) => (
                     <Results link={r} index={index} side={"B"} key={index} />
                   ))
+                ) : (
+                  <p>Nenhum resultado encontrado!</p>
+                )}
+              </div>
+            </div>
+          )}
+          {(rag || gpt) && (
+            <div className={styles.sideA}>
+              <h2>Resultados</h2>
+              <div className={styles.resultList}>
+                {resultsRAG ? (
+                  <div className={styles.resultList}>
+                    <ReactMarkdown>
+                      {resultsRAG}
+                    </ReactMarkdown>
+                  </div>
                 ) : (
                   <p>Nenhum resultado encontrado!</p>
                 )}
