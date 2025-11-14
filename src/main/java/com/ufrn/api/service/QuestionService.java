@@ -132,7 +132,7 @@ public class QuestionService {
 				"]";
 	}
 
-	public List<QuestionLinkDTO> getQuestionsBySemanticSearch(String message, Optional<Integer> op_match_count, Optional<Float> op_match_threshold) {
+	public List<QuestionLinkDTO> getQuestionsBySemanticSearch(String message, Optional<ExceptionsEnum> exception, Optional<Integer> op_match_count, Optional<Float> op_match_threshold) {
 		int match_count = MATCH_CNT;
 		float match_threshold = MATCH_THRESHOLD;
 		if(op_match_count.isPresent()) {
@@ -143,6 +143,11 @@ public class QuestionService {
 		}
 		List<Double> messageEmbedding = getTextEmbedding(message);
 		String formatedMessageEmbedding = formatEmbeddingForQuerry(messageEmbedding);
+
+		if(exception.isPresent()){
+			System.out.println(exception.get().name());
+			return questionRepository.findQuestionByExceptionAndSimilarity(exception.get().name(), formatedMessageEmbedding, match_threshold, match_count);
+		}
 		return questionRepository.findQuestionBySimilarity(formatedMessageEmbedding, match_threshold, match_count);
 	}
 

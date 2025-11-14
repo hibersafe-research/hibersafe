@@ -1,5 +1,6 @@
 package com.ufrn.api.service;
 
+import com.ufrn.dtos.ExceptionsEnum;
 import com.ufrn.dtos.QuestionLinkDTO;
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -22,8 +23,8 @@ public class PromptService {
         this.aiClient = aiClient;
     }
 
-    public String prompt_with_context(String stack_trace, Optional<Integer> op_match_count, Optional<Float> op_match_threshold) {
-        List<QuestionLinkDTO> relevantLinks = questionService.getQuestionsBySemanticSearch(stack_trace, op_match_count, op_match_threshold);
+    public String prompt_with_context(Optional<ExceptionsEnum> exception, String stack_trace, Optional<Integer> op_match_count, Optional<Float> op_match_threshold) {
+        List<QuestionLinkDTO> relevantLinks = questionService.getQuestionsBySemanticSearch(stack_trace, exception, op_match_count, op_match_threshold);
 
         String context = relevantLinks.stream()
           .map(QuestionLinkDTO::toRagContext)

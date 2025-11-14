@@ -62,4 +62,20 @@ public interface QuestionRepository extends JpaRepository<Question, Integer>{
 			@Param("match_cnt") int matchCnt
 	);
 
+	@Query(value = """
+    SELECT q.id AS question_id, 1 - (q.embedding <=> (:messageEmbedding)::vector) AS similarity
+    FROM question q
+    JOIN question_exception qe ON q.id = qe.question_id
+    WHERE (1 - (q.embedding <=> (:messageEmbedding)::vector)) > :match_threshold
+    AND qe.exception = :exception
+    ORDER BY similarity DESC
+    LIMIT :match_cnt
+""", nativeQuery = true)
+	List<QuestionLinkDTO> findQuestionByExceptionAndSimilarity(
+			@Param("exception") String exception,
+			@Param("messageEmbedding") String messageEmbedding,
+			@Param("match_threshold") float matchThreshold,
+			@Param("match_cnt") int matchCnt
+	);
+
 }

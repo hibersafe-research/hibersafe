@@ -2,6 +2,7 @@ package com.ufrn.api.controller;
 
 import com.ufrn.api.service.PromptService;
 import com.ufrn.api.service.QuestionService;
+import com.ufrn.dtos.ExceptionsEnum;
 import com.ufrn.dtos.QuestionLinkDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,12 @@ public class RagController {
     @Autowired
     private QuestionService questionService;
 
-    @PostMapping("")
+//    todo: fazer exception ser um enum
+
+    @PostMapping({"/prompt", "/prompt/{exception}"})
     @CrossOrigin
     public ResponseEntity<String> getRag(
+            @PathVariable Optional<ExceptionsEnum> exception,
             @RequestBody(required=true) String message,
             @RequestParam Optional<Integer> link_count,
             @RequestParam Optional<Float> min_similarity,
@@ -38,21 +42,22 @@ public class RagController {
             stack_trace = message;
         }
         if(rag){
-            response = promptService.prompt_with_context(stack_trace, link_count, min_similarity);
+            response = promptService.prompt_with_context(exception, stack_trace, link_count, min_similarity);
         }else {
             response = promptService.simple_prompt(stack_trace);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/list")
+    @GetMapping({"/list", "/list/{exception}"})
     @CrossOrigin
     public ResponseEntity<String> getList(
+            @PathVariable Optional<ExceptionsEnum> exception,
             @RequestBody(required=true) String message,
             @RequestParam Optional<Integer> link_count,
             @RequestParam Optional<Float> min_similarity
     ) {
-        List<QuestionLinkDTO> questions = questionService.getQuestionsBySemanticSearch(message, link_count, min_similarity);
+        List<QuestionLinkDTO> questions = questionService.getQuestionsBySemanticSearch(message, exception, link_count, min_similarity);
         StringBuilder responseBuffer = new StringBuilder();
         for (QuestionLinkDTO question : questions) {
             responseBuffer.append(question.toString());
