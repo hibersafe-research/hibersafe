@@ -32,6 +32,7 @@ public class RagController {
             @RequestParam Optional<Integer> link_count,
             @RequestParam Optional<Float> min_similarity,
             @RequestParam(required = false, defaultValue = "true") boolean rag,
+            @RequestParam(required = false, defaultValue = "false") boolean just_so,
             @RequestParam(required = false, defaultValue = "false") boolean clean_stack_trace
     ) {
         String stack_trace;
@@ -41,7 +42,9 @@ public class RagController {
         }else {
             stack_trace = message;
         }
-        if(rag){
+        if(just_so){
+            response = promptService.prompt_just_so(stack_trace);
+        } else if(rag){
             response = promptService.prompt_with_context(exception, stack_trace, link_count, min_similarity);
         }else {
             response = promptService.simple_prompt(stack_trace);
