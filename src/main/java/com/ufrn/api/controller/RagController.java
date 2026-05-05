@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,7 @@ public class RagController {
             @RequestParam Optional<Float> min_similarity,
             @RequestParam(required = false, defaultValue = "true") boolean rag,
             @RequestParam(required = false, defaultValue = "false") boolean just_so,
+            @RequestParam(required = false) String limitDate,
             @RequestParam(required = false, defaultValue = "false") boolean clean_stack_trace
     ) {
         String stack_trace;
@@ -43,7 +45,7 @@ public class RagController {
             stack_trace = message;
         }
         if(just_so){
-            response = promptService.prompt_just_so(stack_trace);
+            response = promptService.prompt_just_so(stack_trace, limitDate);
         } else if(rag){
             response = promptService.prompt_with_context(exception, stack_trace, link_count, min_similarity);
         }else {

@@ -7,10 +7,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,14 +84,14 @@ public class PromptService {
         return aiClient.call(chatPrompt).getResult().getOutput().getContent();
     }
 
-    public String prompt_just_so(String stack_trace) {
+    public String prompt_just_so(String stack_trace, String limitDate) {
         PromptTemplate template = new PromptTemplate(
                 """
                 Você é o assistente de programação Hibersafe, um assistente de IA especialista exceções geradas por anotações do Hibernate. Sua principal missão é ajudar a entender o que causou o lançamento da excessão e como fazer o programa funcionar corretamente.
                     \s
                 Siga estas regras RIGOROSAMENTE:
                     \s
-                1.  *STACK OVERFLOW COMO CONTEXTO:* Busque problemas parecidos com o atual no Stack Overflow e responda baseado nas informações contidas nos problemas encontrados.
+                1.  *STACK OVERFLOW COMO CONTEXTO:* Busque problemas parecidos com o atual no Stack Overflow e responda baseado nas informações contidas nos problemas encontrados. Se atenha apenas até a data limite {limitDate}.
                 2.  *CITE QUANDO POSSÍVEL:* Caso se baseie em uma informação, cite um local onde pode achar mais informações sobre.
                 3.  *SEJA DIRETO E SINTETIZE:* Forneça uma resposta direta e clara para a pergunta do usuário. Sintetize a informação das perguntas e respostas relevantes encontradas no Stack Overflow. Não se limite a listar ou repetir os trechos fornecidos.
                 4.  *TOM PROFISSIONAL:* Mantenha sempre um tom profissional, técnico e formal. Sua linguagem deve ser descritiva e precisa.
@@ -108,6 +105,7 @@ public class PromptService {
         Map<String, Object> variables = new HashMap<>();
 
         variables.put("stack_trace", stack_trace);
+        variables.put("limitDate", limitDate);
 
         Prompt chatPrompt = template.create(variables);
 
