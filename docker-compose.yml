@@ -1,0 +1,48 @@
+services:
+  postgres-db:
+    build:
+      context: ./database
+    container_name: hibersafe-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: rag_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d rag_db && psql -U postgres -d rag_db -c \"SELECT 1 FROM pg_extension WHERE extname='vector';\""]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  hibersafe-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
+    container_name: hibersafe-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/rag_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  hibersafe-frontend:
+    build:
+      context: ./hibersafe-frontend
+      dockerfile: Dockerfile
+      network: host
+    container_name: hibersafe-frontend
+    ports:
+      - "8081:8081"
+    depends_on:
+      - hibersafe-backend
+
+volumes:
+  postgres_data:

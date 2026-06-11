@@ -2,18 +2,20 @@ package com.ufrn.api.entities;
 
 import java.util.Calendar;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "log_web")
 public class LogWeb {
-	
+
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "log_web_seq_gen")
+	@SequenceGenerator(
+			name = "log_web_seq_gen",
+			sequenceName = "log_web_seq",
+			initialValue = 1,
+			allocationSize = 1
+	)
 	public Integer id;
 	
 	@Column

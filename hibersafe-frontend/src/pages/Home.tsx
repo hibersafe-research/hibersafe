@@ -155,7 +155,7 @@ export default function Home() {
       setLoading(true);
       try {
         let returnRAG = await axios.post<any, RagAPI>(
-          `http://localhost:8000/api/rag?link_count=${linkCount}&min_similarity=${minSimilarity}&rag=${useRAG}`,
+          `http://localhost:8080/api/rag?link_count=${linkCount}&min_similarity=${minSimilarity}&rag=${useRAG}`,
           { stacktrace }
         );
         setResultsRAG(returnRAG?.data);
@@ -175,7 +175,7 @@ export default function Home() {
 
   useEffect(() => {
     if (toLog && estrategia === "A") {
-      axios.post<any, any>(`http://localhost:8000/api/log/`, {
+      axios.post<any, any>(`http://localhost:8080/api/log/`, {
         estrategia,
         id,
         dados: resultsA,
@@ -188,7 +188,7 @@ export default function Home() {
 
   useEffect(() => {
     if (toLog && estrategia === "B") {
-      axios.post<any, any>(`http://localhost:8000/api/log/`, {
+      axios.post<any, any>(`http://localhost:8080/api/log/`, {
         estrategia,
         id,
         dados: resultsB,
