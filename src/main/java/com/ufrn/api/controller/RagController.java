@@ -34,7 +34,7 @@ public class RagController {
             @RequestParam Optional<Float> min_similarity,
             @RequestParam(required = false, defaultValue = "true") boolean rag,
             @RequestParam(required = false, defaultValue = "false") boolean just_so,
-            @RequestParam(required = false) String limitDate,
+            @RequestParam(required = false, defaultValue = "") String limitDate,
             @RequestParam(required = false, defaultValue = "false") boolean clean_stack_trace
     ) {
         String stack_trace;
@@ -54,7 +54,7 @@ public class RagController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping({"/list", "/list/{exception}"})
+    @PostMapping({"/list", "/list/{exception}"})
     @CrossOrigin
     public ResponseEntity<String> getList(
             @PathVariable Optional<ExceptionsEnum> exception,

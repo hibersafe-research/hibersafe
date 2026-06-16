@@ -4,316 +4,213 @@ import styles from "./Home.module.scss";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import ReactMarkdown from 'react-markdown';
+import { exceptions } from "../utils/utils";
 
 interface GoogleAPI {
-  data: {
-    organic_results: [{ link: string }];
-  };
+  data: { organic_results: [{ link: string }] };
 }
 
 interface HibersafeAPI {
-  data: {
-    topSimilarity: [{ url: string }];
-  };
-}
-
-interface RagAPI {
-  data: string
+  data: { topSimilarity: [{ url: string }] };
 }
 
 export default function Home() {
   const [searchParams] = useSearchParams();
-  let estrategia = searchParams.get("estrategia");
-  let id = searchParams.get("id");
-  let rag = searchParams.get("rag");
-  let gpt = searchParams.get("gpt");
-  let linkCount = searchParams.get("link_count") ?? 15
-  let minSimilarity = searchParams.get("min_similarity") ?? 0.75
 
-  const exceptions = [
-    "AnnotationException",
-    "AssertionFailure",
-    "AuthException",
-    "CallbackException",
-    "ConstraintViolationException",
-    "DataException",
-    "DuplicateMappingException",
-    "EntityFilterException",
-    "FetchNotFoundException",
-    "GenericJDBCException",
-    "HibernateError",
-    "HibernateException",
-    "InstantiationException",
-    "InvalidMappingException",
-    "JDBCConectionException",
-    "JDBCException",
-    "LazyInitializationException",
-    "LockAcquisitionException",
-    "LockTimeoutException",
-    "MappingException",
-    "NonUniqueObjectException",
-    "NonUniqueResultException",
-    "ObjectDeletedException",
-    "ObjectNotFoundException",
-    "PersistentObjectException",
-    "PessimisticLockException",
-    "PropertyAccessException",
-    "PropertyNotFoundException",
-    "PropertySetterAccessException",
-    "PropertyValueException",
-    "QueryException",
-    "QueryParameterException",
-    "QueryTimeoutException",
-    "ResourceClosedException",
-    "SessionException",
-    "SnapshotIsolationException",
-    "SQLGrammarException",
-    "StaleObjectStateException",
-    "StaleStateException",
-    "TransactionException",
-    "TransactionManagementException",
-    "TransactionSerializationException",
-    "TransientObjectException",
-    "TransientPropertyValueException",
-    "TypeMismatchException",
-    "UnknownEntityTypeException",
-    "UnknownFilterException",
-    "UnknownProfileException",
-    "UnresolvableObjectException",
-    "UnsupportedLockAttemptException",
-    "WrongClassException",
-  ];
+  const estrategia = searchParams.get("estrategia");
+  const id = searchParams.get("id");
+  const rag = searchParams.get("rag");
+  const gpt = searchParams.get("gpt");
+  const list = searchParams.get("list");
+  const justSo = searchParams.get("just_so");
+  const linkCount = searchParams.get("link_count") ?? 15;
+  const minSimilarity = searchParams.get("min_similarity") ?? 0.75;
+
+  let activeMode: 'LIST' | 'JUST_SO' | 'RAG' | 'GPT' | 'A' | 'B' | null = null;
+  if (list) activeMode = 'LIST';
+  else if (justSo) activeMode = 'JUST_SO';
+  else if (rag) activeMode = 'RAG';
+  else if (gpt) activeMode = 'GPT';
+  else if (estrategia === "A" && id) activeMode = 'A';
+  else if (estrategia === "B" && id) activeMode = 'B';
+
   const [exception, setException] = useState<string>(exceptions[0]);
   const [resultsA, setResultsA] = useState<string[]>([]);
   const [resultsB, setResultsB] = useState<string[]>([]);
   const [resultsRAG, setResultsRAG] = useState<string>('');
+  const [resultsListRAG, setResultsListRAG] = useState<string[]>([]);
   const [stacktrace, setStacktrace] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [toLog, setToLog] = useState<boolean>(false);
 
   const calculateResultsA = async () => {
     setResultsA([]);
-    if (!stacktrace) {
-      alert("Informe uma stacktrace para continuar!");
-    } else {
-      setLoading(true);
-      try {
-        let returnInfoA = await axios.get<any, GoogleAPI>(
+    setLoading(true);
+    try {
+      let returnInfoA = await axios.get<any, GoogleAPI>(
           `https://api.scaleserp.com/search?api_key=${process.env.REACT_APP_SCALESERP_GOOGLE_API_KEY}&q=site:stackoverflow.com ${stacktrace}&flatten_results=true`
-        );
-
-        if (returnInfoA.data.organic_results) {
-          returnInfoA.data.organic_results.forEach(async (or) => {
-            setResultsA((arr) => [...arr, or.link]);
-          });
-        }
-
-        setToLog(true);
-
-        setLoading(false);
-      } catch (e) {
-        alert("Ocorreu algum erro. Por favor, tente novamente.");
-        setResultsA([]);
-        setLoading(false);
-        console.log(e);
+      );
+      if (returnInfoA.data.organic_results) {
+        setResultsA(returnInfoA.data.organic_results.map(or => or.link));
       }
+      setToLog(true);
+    } catch (e) {
+      alert("Ocorreu algum erro. Por favor, tente novamente.");
+      console.log(e);
+    } finally {
+      setLoading(false);
     }
   };
 
   const calculateResultsB = async () => {
     setResultsB([]);
-    if (!stacktrace) {
-      alert("Informe uma stacktrace para continuar!");
-    } else {
-      setLoading(true);
-      try {
-        let returnInfoB = await axios.post<any, HibersafeAPI>(
+    setLoading(true);
+    try {
+      let returnInfoB = await axios.post<any, HibersafeAPI>(
           `http://localhost:8080/api/question/exceptionEnum/${exception}`,
           { stacktrace }
-        );
-        returnInfoB.data.topSimilarity.forEach(async (ts) => {
-          setResultsB((arr) => [...arr, ts.url]);
-        });
-
-        setToLog(true);
-
-        setLoading(false);
-      } catch (e) {
-        alert("Ocorreu algum erro. Por favor, tente novamente.");
-        setResultsB([]);
-        setLoading(false);
-        console.log(e);
-      }
+      );
+      setResultsB(returnInfoB.data.topSimilarity.map(ts => ts.url));
+      setToLog(true);
+    } catch (e) {
+      alert("Ocorreu algum erro. Por favor, tente novamente.");
+      console.log(e);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const calculateRAGResult = async (useRAG: boolean) => {
+  const calculateRAGResult = async (useRAG: boolean, isList: boolean, useJustSo: boolean) => {
     setResultsRAG('');
+    setResultsListRAG([]);
+    setLoading(true);
+    try {
+      const endpoint = isList ? "list" : "prompt";
+      let queryParams = `link_count=${linkCount}&min_similarity=${minSimilarity}`;
+
+      if (!isList) {
+        queryParams += `&rag=${useRAG}&just_so=${useJustSo}&limitDate=`;
+      }
+
+      let response = await axios.post<any, any>(
+          `http://localhost:8080/api/rag/${endpoint}?${queryParams}`,
+          stacktrace,
+          { headers: { 'Content-Type': 'text/plain' } }
+      );
+
+      if (isList) {
+        const linksArray = response.data.split('\n').filter((link: string) => link.trim() !== '');
+        setResultsListRAG(linksArray);
+      } else {
+        setResultsRAG(response?.data);
+      }
+    } catch (e) {
+      alert("Ocorreu algum erro. Por favor, tente novamente.");
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleSearch = () => {
     if (!stacktrace) {
       alert("Informe uma stacktrace para continuar!");
-    } else {
-      setLoading(true);
-      try {
-        let returnRAG = await axios.post<any, RagAPI>(
-          `http://localhost:8080/api/rag?link_count=${linkCount}&min_similarity=${minSimilarity}&rag=${useRAG}`,
-          { stacktrace }
-        );
-        setResultsRAG(returnRAG?.data);
-        setLoading(false);
-      } catch (e) {
-        alert("Ocorreu algum erro. Por favor, tente novamente.");
-        setResultsB([]);
-        setLoading(false);
-        console.log(e);
-      }
+      return;
+    }
+    switch (activeMode) {
+      case 'A': calculateResultsA(); break;
+      case 'B': calculateResultsB(); break;
+      case 'LIST': calculateRAGResult(true, true, false); break;
+      case 'JUST_SO': calculateRAGResult(false, false, true); break;
+      case 'RAG': calculateRAGResult(true, false, false); break;
+      case 'GPT': calculateRAGResult(false, false, false); break;
     }
   }
 
-  const calculateRAG = async () => {await calculateRAGResult(true)}
-
-  const calculateGPT  = async () => {await calculateRAGResult(false)}
-
   useEffect(() => {
-    if (toLog && estrategia === "A") {
+    if (toLog && (activeMode === 'A' || activeMode === 'B')) {
       axios.post<any, any>(`http://localhost:8080/api/log/`, {
-        estrategia,
+        estrategia: activeMode,
         id,
-        dados: resultsA,
+        dados: activeMode === 'A' ? resultsA : resultsB,
         stacktrace,
         exception,
       });
+      setToLog(false);
     }
-    setToLog(false);
-  }, [estrategia, exception, id, resultsA, stacktrace, toLog]);
+  }, [activeMode, exception, id, resultsA, resultsB, stacktrace, toLog]);
 
-  useEffect(() => {
-    if (toLog && estrategia === "B") {
-      axios.post<any, any>(`http://localhost:8080/api/log/`, {
-        estrategia,
-        id,
-        dados: resultsB,
-        stacktrace,
-        exception,
-      });
+  const renderInputForm = () => {
+    if (!activeMode) {
+      return <p>Nenhum modo selecionado. Por favor, insira parâmetros válidos na URL.</p>;
     }
-    setToLog(false);
-  }, [estrategia, exception, id, resultsB, stacktrace, toLog]);
 
-  const renderOldStrategies = () => {
-    return estrategia && id && (
-      <div className={styles.inputGroup}>
-        <label>Selecione a exceção lançada e informe a stacktrace:</label>
-        <select
-          onChange={(e) => setException(e.target.value)}
-          disabled={loading}
-        >
-          {exceptions.map((exception) => (
-            <option>{exception}</option>
-          ))}
-        </select>
-        <textarea
-          id="stacktrace"
-          onChange={(e) => setStacktrace(e.target.value)}
-          maxLength={1200}
-          disabled={loading}
-        />
-        <button
-          onClick={
-            estrategia === "A"
-              ? calculateResultsA
-              : estrategia === "B"
-                ? calculateResultsB
-                : undefined
-          }
-          disabled={!stacktrace || loading}
-        >
-          Buscar
-        </button>
-      </div>
-    )
+    const needsException = activeMode === 'A' || activeMode === 'B';
+
+    return (
+        <div className={styles.inputGroup}>
+          {needsException && (
+              <>
+                <label>Selecione a exceção lançada:</label>
+                <select onChange={(e) => setException(e.target.value)} disabled={loading}>
+                  {exceptions.map((exc, index) => (
+                      <option key={index} value={exc}>{exc}</option>
+                  ))}
+                </select>
+              </>
+          )}
+          <label>Informe a stacktrace:</label>
+          <textarea
+              id="stacktrace"
+              onChange={(e) => setStacktrace(e.target.value)}
+              maxLength={1200}
+              disabled={loading}
+          />
+          <button onClick={handleSearch} disabled={!stacktrace || loading}>
+            Buscar
+          </button>
+        </div>
+    );
   }
 
-  const renderRAG = () => {
-    return (rag || gpt) && (
-      <div className={styles.inputGroup}>
-        <label>Informe a stacktrace:</label>
-        <textarea
-          id="stacktrace"
-          onChange={(e) => setStacktrace(e.target.value)}
-          maxLength={1200}
-          disabled={loading}
-        />
-        <button
-          onClick={rag ? calculateRAG : calculateGPT}
-          disabled={loading}
-        >
-          Buscar
-        </button>
-      </div>
-    )
+  const renderResults = () => {
+    if (!activeMode || loading) return null;
+    const containerStyle = activeMode === 'B' ? styles.sideB : styles.sideA;
+
+    return (
+        <div className={styles.results}>
+          <div className={containerStyle}>
+            <h2>Resultados</h2>
+            <div className={styles.resultList}>
+              {activeMode === 'A' && (
+                  resultsA.length > 0 ? resultsA.map((r, i) => <Results link={r} index={i} side={"A"} key={i} />) : <p>Nenhum resultado encontrado!</p>
+              )}
+
+              {activeMode === 'B' && (
+                  resultsB.length > 0 ? resultsB.map((r, i) => <Results link={r} index={i} side={"B"} key={i} />) : <p>Nenhum resultado encontrado!</p>
+              )}
+
+              {activeMode === 'LIST' && (
+                  resultsListRAG.length > 0 ? resultsListRAG.map((r, i) => <Results link={r} index={i} side={"RAG"} key={i} />) : <p>Nenhum resultado encontrado!</p>
+              )}
+
+              {(activeMode === 'RAG' || activeMode === 'GPT' || activeMode === 'JUST_SO') && (
+                  resultsRAG ? <ReactMarkdown>{resultsRAG}</ReactMarkdown> : <p>Nenhum resultado encontrado!</p>
+              )}
+            </div>
+          </div>
+        </div>
+    );
   }
 
   return (
-    <div className={styles.pageRoot}>
-      <h1>Hibersafe</h1>
-      {renderOldStrategies()}
-      {renderRAG()}
-      {loading && (
-        <img
-          alt="Carregando..."
-          height="100em"
-          width="118em%"
-          src="loading.gif"
-        />
-      )}
-      {!loading && (
-        <div className={styles.results}>
-          {estrategia === "A" && (
-            <div className={styles.sideA}>
-              <h2>Resultados</h2>
-              <div className={styles.resultList}>
-                {resultsA.length > 0 ? (
-                  resultsA.map((r, index) => (
-                    <Results link={r} index={index} side={"A"} key={index} />
-                  ))
-                ) : (
-                  <p>Nenhum resultado encontrado!</p>
-                )}
-              </div>
-            </div>
-          )}
-          {estrategia === "B" && (
-            <div className={styles.sideB}>
-              <h2>Resultados</h2>
-              <div className={styles.resultList}>
-                {resultsB.length > 0 ? (
-                  resultsB.map((r, index) => (
-                    <Results link={r} index={index} side={"B"} key={index} />
-                  ))
-                ) : (
-                  <p>Nenhum resultado encontrado!</p>
-                )}
-              </div>
-            </div>
-          )}
-          {(rag || gpt) && (
-            <div className={styles.sideA}>
-              <h2>Resultados</h2>
-              <div className={styles.resultList}>
-                {resultsRAG ? (
-                  <div className={styles.resultList}>
-                    <ReactMarkdown>
-                      {resultsRAG}
-                    </ReactMarkdown>
-                  </div>
-                ) : (
-                  <p>Nenhum resultado encontrado!</p>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+      <div className={styles.pageRoot}>
+        <h1>Hibersafe</h1>
+        {renderInputForm()}
+        {loading && (
+            <img alt="Carregando..." height="100em" width="118em" src="loading.gif" />
+        )}
+        {renderResults()}
+      </div>
   );
 }
