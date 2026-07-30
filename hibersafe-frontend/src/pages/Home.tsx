@@ -67,7 +67,7 @@ export default function Home() {
     setLoading(true);
     try {
       let returnInfoB = await axios.post<any, HibersafeAPI>(
-          `http://localhost:8080/api/question/exceptionEnum/${exception}`,
+          `/api/question/exceptionEnum/${exception}`,
           { stacktrace }
       );
       setResultsB(returnInfoB.data.topSimilarity.map(ts => ts.url));
@@ -93,7 +93,7 @@ export default function Home() {
       }
 
       let response = await axios.post<any, any>(
-          `http://localhost:8080/api/rag/${endpoint}?${queryParams}`,
+          `$/api/rag/${endpoint}?${queryParams}`,
           stacktrace,
           { headers: { 'Content-Type': 'text/plain' } }
       );
@@ -129,7 +129,7 @@ export default function Home() {
 
   useEffect(() => {
     if (toLog && (activeMode === 'A' || activeMode === 'B')) {
-      axios.post<any, any>(`http://localhost:8080/api/log/`, {
+      axios.post<any, any>(`/api/log/`, {
         estrategia: activeMode,
         id,
         dados: activeMode === 'A' ? resultsA : resultsB,
