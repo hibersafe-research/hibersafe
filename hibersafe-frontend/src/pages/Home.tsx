@@ -93,7 +93,7 @@ export default function Home() {
       }
 
       let response = await axios.post<any, any>(
-          `$/api/rag/${endpoint}?${queryParams}`,
+          `/api/rag/${endpoint}?${queryParams}`,
           stacktrace,
           { headers: { 'Content-Type': 'text/plain' } }
       );
